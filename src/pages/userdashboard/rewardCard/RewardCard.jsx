@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FiGift, FiDollarSign, FiPercent, FiUserPlus, FiSettings, FiCreditCard } from 'react-icons/fi';
 import Swal from 'sweetalert2';
-import { useApp } from '../context/Appcontext';
+import { useApp } from '../../../context/Appcontext';
 
 export function RewardsCenter() {
   const [activeTab, setActiveTab] = useState('rewards');

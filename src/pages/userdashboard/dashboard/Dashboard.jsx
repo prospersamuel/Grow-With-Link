@@ -29,7 +29,7 @@ import {
   SecuritySettings,
 } from "../userSettings/Usersettings";
 import Transactions from "../transactions/Transactions";
-import { RewardsCenter } from "../../../Components/RewardCard";
+import { RewardsCenter } from "../rewardCard/RewardCard";
 import useDashboardStats from "../../../hooks/useDashboardStats";
 import DashboardOverview from "./DashboardOverview";
 import Sidebar from "./Sidebar";
