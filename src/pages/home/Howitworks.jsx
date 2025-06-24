@@ -29,7 +29,7 @@ export default function HowItWorks() {
       <div className="max-w-7xl mx-auto px-4 text-center">
         <div className="flex space-x-3 items-center mb-12 justify-center">
           <div className="h-2 w-20 rounded-full bg-primary"></div>
-        <h2 className="text-3xl font-bold left-0 mb-1 uppercase">How It Works</h2>
+        <h2 className="text-lg md:text-3xl font-bold left-0 mb-1 uppercase">How It Works</h2>
           <div className="h-2 w-20 rounded-full bg-primary"></div>
         </div>
 

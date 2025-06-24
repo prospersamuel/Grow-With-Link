@@ -33,9 +33,9 @@ export default function FeaturesSection() {
           viewport={{ once: true }}
           className="text-3xl md:text-4xl font-extrabold mb-16 uppercase text-slate-800 dark:text-white"
         >
-         <div className="flex space-x-3 items-center mb-12 justify-center">
+         <div className="flex space-x-1 items-center mb-12 justify-center">
           <div className="h-2 w-20 rounded-full bg-primary"></div>
-        <h2 className="text-3xl font-bold left-0 mb-1 uppercase">
+        <h2 className="text-lg md:text-3xl font-bold left-0 mb-1 uppercase">
           Powerful Features Built for Growth
           </h2>
           <div className="h-2 w-20 rounded-full bg-primary"></div>

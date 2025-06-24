@@ -15,11 +15,11 @@ export default function HeroSection() {
         transition={{ duration: 0.6 }}
         className="flex-1 text-center md:text-left"
       >
-        <h2 className="text-5xl md:text-5xl font-extrabold mb-4 text-neutral-800 dark:text-neutral-100">
+        <h2 className="text-3xl md:text-5xl font-extrabold mb-4 text-neutral-800 dark:text-neutral-100">
           Track & Reward Referrals Effortlessly
         </h2>
 
-        <p className="text-lg max-w-xl mb-8 text-neutral-700 dark:text-neutral-300">
+        <p className="text-sm md:text-lg max-w-xl mb-8 font-bold text-neutral-500 dark:text-neutral-300">
           Build your referral system for your store in minutes. Monitor clicks,
           reward referrals, and grow your brand without hassle.
         </p>

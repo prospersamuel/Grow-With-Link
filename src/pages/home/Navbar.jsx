@@ -74,19 +74,19 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden top-0 px-4 pb-4 space-y-2 bg-slate-900 absolute flex justify-center items-center flex-col w-[100%] h-[100vh] dark:bg-slate-900 backdrop-blur-md"
+            className="md:hidden top-0 px-4 pb-4 space-y-2 bg-neutral-100 absolute flex justify-center items-center flex-col w-[100%] h-[100vh] dark:bg-slate-900 backdrop-blur-md"
           >
              <button className="absolute top-3 font-extrabold right-3" onClick={() => setMenuOpen(!menuOpen)}>
           <span className="text-5xl">×</span>
         </button>
-            {navLinks.map(({ label, path }) => (
+            {navLinks.map(( link , i) => (
               <a
-                href={path}
-                key={path}
+                href={link.path}
+                key={i}
                 onClick={() => setMenuOpen(false)}
                 className="block text-3xl font-semibold transition text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-slate-700"
               >
-                {label}
+                {link.label}
               </a>
             ))}
 

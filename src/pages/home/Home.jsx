@@ -11,7 +11,7 @@ import Policies from "./Policies";
 
 export default function Home() {
   return (
-    <div className="bg-neutral-100 dark:bg-slate-950 text-slate-900 dark:text-neutral-100 transition-colors duration-300">
+    <div className="bg-neutral-100 overflow-hidden dark:bg-slate-950 text-slate-900 dark:text-neutral-100 transition-colors duration-300">
       <Navbar />
       <HeroSection />
       <FeaturesSection />
