@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import emailjs from "emailjs-com";
-import contactImage from "../../../assets/undraw_contact-us_kcoa.svg";
+import contactImage from "../../assets/undraw_contact-us_kcoa.svg";
 import toast from 'react-hot-toast';
 
 export default function Contact() {
@@ -58,7 +58,7 @@ const input =[
         
            <div className="flex space-x-3 items-center mb-3">
           <div className="h-2 w-20 rounded-full bg-primary"></div>
-          <h2 className="text-4xl font-bold uppercase">Get in Touch</h2>
+          <h2 className="text-lg md:text-3xl font-bold uppercase">Get in Touch</h2>
           <div className="h-2 w-20 rounded-full bg-primary"></div>
         </div>
           <p className="mb-6 text-slate-600 dark:text-slate-400">

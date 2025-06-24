@@ -1,25 +1,28 @@
 // HowItWorks.jsx
 import { motion } from "framer-motion";
 import { FaLink, FaCookie, FaShoppingCart } from "react-icons/fa";
+import referral_SVG from '../../assets/undraw_referral_j2rw.svg'
+import revenue_SVG from '../../assets/undraw_revenue_kv38.svg'
+import trackng_SVG from '../../assets/undraw_progress-tracking_9m3o.svg'
 
 const steps = [
   {
     icon: <FaLink size={28} />,
     title: "Generate Referral Links",
     desc: "Store owners create unique referral links and share them with partners or influencers.",
-    img: "assets/undraw_referral_j2rw.svg",
+    img: referral_SVG,
   },
   {
     icon: <FaCookie size={28} />,
     title: "Track Visitors & Cookies",
     desc: "When a visitor clicks a link, we track the referral using cookies and URL parameters.",
-    img: "assets/undraw_revenue_kv38.svg",
+    img: revenue_SVG,
   },
   {
     icon: <FaShoppingCart size={28} />,
     title: "Monitor Conversions",
     desc: "Once the user checks out, your dashboard updates with the referral details instantly.",
-    img: "assets/undraw_progress-tracking_9m3o.svg",
+    img: trackng_SVG,
   },
 ];
 

@@ -1,14 +1,13 @@
 // File: src/pages/Home/HeroSection.jsx
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import Illustration from "../../../assets/undraw_progress-data_gvcq.svg"; 
+import Illustration from "../../assets/undraw_progress-data_gvcq.svg"; 
 import { useApp } from "../../context/Appcontext";
 
 export default function HeroSection() {
   const { openLogin } = useApp();
 
   return (
-    <section className="flex flex-col-reverse md:flex-row items-center justify-between px-6 h-[80vh] py-10 max-w-7xl mx-auto gap-12">
+    <section className="flex flex-col-reverse sm:flex-row items-center justify-between px-6 h-[80vh] py-10 max-w-7xl mx-auto gap-12">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}

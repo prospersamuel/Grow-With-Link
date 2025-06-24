@@ -76,6 +76,13 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
             className="md:hidden top-0 px-4 pb-4 space-y-2 bg-neutral-100 absolute flex justify-center items-center flex-col w-[100%] h-[100vh] dark:bg-slate-900 backdrop-blur-md"
           >
+              <button
+            onClick={toggleTheme}
+            className="ml-4 p-2 rounded-full hover:bg-neutral-200 dark:hover:bg-slate-700 transition"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <FaSun size={18} /> : <FaMoon size={18} />}
+          </button>
              <button className="absolute top-3 font-extrabold right-3" onClick={() => setMenuOpen(!menuOpen)}>
           <span className="text-5xl">×</span>
         </button>

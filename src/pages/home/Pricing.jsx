@@ -40,9 +40,9 @@ export default function PricingSection() {
           viewport={{ once: true }}
           className="text-3xl font-bold mb-4 uppercase"
         >
-           <div className="flex space-x-3 items-center justify-center">
+           <div className="flex space-x-2 items-center mb-2 justify-center">
           <div className="h-2 w-20 rounded-full bg-primary"></div>
-        <h2 className="text-3xl mb-3 font-bold left-0 uppercase">
+        <h2 className="text-lg md:text-3xl font-bold left-0 uppercase">
           Pricing Plans
           </h2>
           <div className="h-2 w-20 rounded-full bg-primary"></div>
