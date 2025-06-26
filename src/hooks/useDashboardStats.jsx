@@ -6,6 +6,7 @@ import { FiUsers, FiCreditCard, FiZap } from "react-icons/fi";
 import { RiExchangeLine } from "react-icons/ri";
 
 export default function useDashboardStats(user) {
+  
   const [stats, setStats] = useState([]);
 
   useEffect(() => {

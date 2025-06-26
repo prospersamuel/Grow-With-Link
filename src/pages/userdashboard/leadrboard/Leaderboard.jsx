@@ -11,12 +11,7 @@ const referrers = [
 
 export default function Leaderboard() {
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.6 }}
-      className="bg-white/80 dark:bg-slate-800/80 h-[70vh] overflow-auto backdrop-blur-sm rounded-2xl p-5 shadow border border-slate-200/50 dark:border-slate-700/50"
-    >
+    <>
       <div className="flex items-center gap-3 mb-5">
         <div className="p-2 rounded-lg bg-amber-100/50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400">
           <FiAward />
@@ -24,7 +19,7 @@ export default function Leaderboard() {
         <h3 className="font-semibold">Top Referrers</h3>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-4  h-fit max-h-[67vh] overflow-auto">
         {referrers.map((person, index) => (
           <motion.div
             key={person.id}
@@ -52,6 +47,6 @@ export default function Leaderboard() {
           </motion.div>
         ))}
       </div>
-    </motion.div>
+      </>
   );
 }

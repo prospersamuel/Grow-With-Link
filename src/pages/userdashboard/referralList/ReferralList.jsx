@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiUser, FiDownload, FiMoreVertical, FiSearch, FiChevronLeft, FiChevronRight, FiUpload } from "react-icons/fi";
+import { FiUser, FiMoreVertical, FiSearch, FiChevronLeft, FiChevronRight, FiUpload, FiTrash2 } from "react-icons/fi";
 
 // Mock data - in a real app you'd fetch this from an API
 const mockData = Array.from({ length: 45 }, (_, i) => ({
@@ -16,7 +16,21 @@ export default function ReferralList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
+  const [openMenuId, setOpenMenuId] = useState(null);
   const itemsPerPage = 20;
+
+
+  const handleDelete = (id) => {
+  setData(prev => prev.filter(item => item.id !== id));
+  setOpenMenuId(null); // Close the menu after deletion
+};
+
+// Add this useEffect hook with your other hooks
+useEffect(() => {
+  const handleClickOutside = () => setOpenMenuId(null);
+  document.addEventListener('click', handleClickOutside);
+  return () => document.removeEventListener('click', handleClickOutside);
+}, []);
 
   // Filter and search logic
   useEffect(() => {
@@ -59,9 +73,9 @@ export default function ReferralList() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800/80 rounded-xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 h-[75vh] overflow-auto">
+    <>
       {/* Header with search and filters */}
-      <div className="p-6 border-b border-slate-200/50 dark:border-slate-700/50">
+      <div className="border-b-2 border-slate-200/50 mb-3 dark:border-slate-700/50">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Referral Activity</h2>
@@ -85,7 +99,7 @@ export default function ReferralList() {
             </div>
             
             <select
-              className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
@@ -94,19 +108,15 @@ export default function ReferralList() {
               <option value="Approved">Approved</option>
               <option value="Rejected">Rejected</option>
             </select>
-            
-            <button disabled className="px-4 py-2 disabled:bg-slate-500 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center justify-center">
-              <FiUpload className="mr-2" /> Export
-            </button>
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto h-[55vh]">
         <table className="w-full">
           <thead>
-            <tr className="text-sm text-slate-600 dark:text-slate-300 border-b border-slate-200/50 dark:border-slate-700/50">
+            <tr className="text-sm text-slate-600 dark:text-slate-300 border-b-2 border-slate-200/50 dark:border-slate-700/50">
               <th className="px-6 py-3 text-left font-medium">Referrer</th>
               <th className="px-6 py-3 text-left font-medium">Date</th>
               <th className="px-6 py-3 text-left font-medium">Reward</th>
@@ -146,7 +156,7 @@ export default function ReferralList() {
                     <div className="flex justify-end space-x-2">
                       {ref.status !== 'Approved' && (
                         <button 
-                          className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors"
+                          className="px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors"
                           onClick={() => handleStatusChange(ref.id, 'Approved')}
                         >
                           Approve
@@ -154,15 +164,33 @@ export default function ReferralList() {
                       )}
                       {ref.status !== 'Rejected' && (
                         <button 
-                          className="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+                          className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded transition-colors"
                           onClick={() => handleStatusChange(ref.id, 'Rejected')}
                         >
                           Reject
                         </button>
                       )}
-                      <button className="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-700/50">
-                        <FiMoreVertical size={16} />
-                      </button>
+                      <button
+  className="p-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-700/50 relative"
+  onClick={(e) => {
+    e.stopPropagation();
+    setOpenMenuId(openMenuId === ref.id ? null : ref.id);
+  }}
+>
+  <FiMoreVertical size={16} />
+  {openMenuId === ref.id && (
+    <button
+    title='delete user'
+      className="absolute -right-5 -top-5 z-10 px-2 py-1.5 text-xs bg-slate-600 hover:bg-slate-500 text-white rounded transition-colors shadow-lg"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleDelete(ref.id);
+      }}
+    >
+      <FiTrash2 />
+    </button>
+  )}
+</button>
                     </div>
                   </td>
                 </tr>
@@ -249,6 +277,6 @@ export default function ReferralList() {
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

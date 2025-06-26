@@ -144,12 +144,7 @@ export default function ReferralChart() {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-5 shadow-lg border border-slate-200/50 dark:border-slate-700/50 hover:shadow-md transition-shadow"
-    >
+    <>
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Referral Growth</h3>
@@ -268,6 +263,6 @@ export default function ReferralChart() {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+      </>
   );
 }

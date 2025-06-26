@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -34,7 +34,7 @@ import useDashboardStats from "../../../hooks/useDashboardStats";
 import DashboardOverview from "./DashboardOverview";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { db, auth } from "../../../services/firebase";
+import { auth } from "../../../services/firebase";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -61,6 +61,7 @@ export default function Dashboard() {
       setSidebarOpen(true);
     }
   }, [isMobile]);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -177,16 +178,27 @@ export default function Dashboard() {
   ];
 
   const toggleSection = (section) => {
+    if (section === "dashboard") {
+    setActiveTab("overview");
+    if (isMobile) setSidebarOpen(false);
+  }
     setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section],
     }));
-
+    
     // If it's the dashboard section, set activeTab to "overview"
     if (section === "dashboard") {
       setActiveTab("overview");
     }
   };
+
+  const handleTabClick = (id) => {
+  setActiveTab(id);
+  if (isMobile) {
+    setSidebarOpen(false); // auto-close on mobile
+  }
+};
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -201,11 +213,11 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-slate-100 relative">
+    <div className="flex min-h-screen bg-gradient-to-br h-screen overflow-y-auto from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-slate-100 relative">
       {/* Mobile Sidebar Toggle */}
       <button
         onClick={toggleSidebar}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow border border-slate-200/50 dark:border-slate-700/50"
+        className="md:hidden fixed top-2 left-2 z-50 p-2 rounded-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow border border-slate-200/50 dark:border-slate-700/50"
       >
         {sidebarOpen ? <FiX /> : <FiMenu />}
       </button>
@@ -221,12 +233,13 @@ export default function Dashboard() {
           toggleSection={toggleSection}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          handleTabClick={handleTabClick}
         />
       </AnimatePresence>
 
       {/* Main Content Area */}
       <main
-        className={`p-4 md:p-6 w-[100%]  overflow-y-auto transition-all duration-300 
+        className={`p-4 md:px-6 w-[100%]  overflow-y-auto transition-all duration-300 
       }`}
       >
         {/* Animated Header */}

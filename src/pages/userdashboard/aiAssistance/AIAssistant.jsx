@@ -1,16 +1,24 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FiMessageSquare, FiSend } from "react-icons/fi";
-import { useState } from "react";
-
-const mockMessages = [
-  { id: 1, sender: 'ai', text: "I've analyzed your referral data - would you like optimization suggestions?", time: '2:45 PM' },
-  { id: 2, sender: 'user', text: "Yes please!", time: '2:46 PM' }
-];
+import { useState, useRef, useEffect } from "react";
 
 export default function AIAssistant() {
-  const [messages, setMessages] = useState(mockMessages);
+  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+
+  // Scroll to bottom when messages change or when opening
+  useEffect(() => {
+    if (isOpen) {
+      scrollToBottom();
+    }
+  }, [messages, isOpen]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleSend = () => {
     if (inputValue.trim()) {
@@ -48,43 +56,49 @@ export default function AIAssistant() {
             exit={{ opacity: 0, scale: 0.9 }}
             className="w-80 bg-white/90 dark:bg-slate-800/95 backdrop-blur-xl rounded-xl shadow-2xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden"
           >
-            <div className="p-4 border-b border-slate-200/50 dark:border-slate-700/50 bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+            <div className="p-4 border-b border-slate-200/50 dark:border-slate-700/50 bg-gradient-to-r from-blue-500 to-indigo-600 mb-1 text-white">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-lg bg-white/20">
                   {/* <FiSparkles /> */}
                 </div>
                 <h3 className="font-semibold">Optimization Assistant</h3>
-                <span onClick={()=>{
-                    setIsOpen(false);
-                    setMessages(mockMessages); // Reset messages when closing
-                    setInputValue('');
-                }} className="font-bold text-3xl cursor-pointer absolute right-3">×</span>
+                <span onClick={() => setIsOpen(false)} className="font-bold text-3xl cursor-pointer absolute right-3">×</span>
               </div>
             </div>
 
-            <div className="h-64 p-4 overflow-y-auto">
+            <div 
+              ref={messagesContainerRef}
+              className="h-64 p-4 overflow-y-auto"
+            >
               <div className="space-y-4">
-                {messages.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`max-w-[80%] p-3 rounded-2xl ${
-                      message.sender === 'user' ? 
-                        'bg-blue-500 text-white rounded-br-none' : 
-                        'bg-slate-100 dark:bg-slate-700 rounded-bl-none'
-                    }`}>
-                      <p className="text-sm">{message.text}</p>
-                      <p className={`text-xs mt-1 ${
-                        message.sender === 'user' ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'
+                {messages.length === 0 ? (
+                  <div className="flex items-center justify-center h-full text-slate-400">
+                    Ask me about campaign optimizations...
+                  </div>
+                ) : (
+                  messages.map((message) => (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className={`max-w-[80%] p-3 rounded-2xl ${
+                        message.sender === 'user' ? 
+                          'bg-blue-500 text-white rounded-br-none' : 
+                          'bg-slate-100 dark:bg-slate-700 rounded-bl-none'
                       }`}>
-                        {message.time}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
+                        <p className="text-sm">{message.text}</p>
+                        <p className={`text-xs mt-1 ${
+                          message.sender === 'user' ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'
+                        }`}>
+                          {message.time}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+                <div ref={messagesEndRef} />
               </div>
             </div>
 

@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { FiArrowUpRight } from "react-icons/fi";
 import { FaSun, FaMoon } from "react-icons/fa";
 import NotificationCenter from "../notification/NotificationCenter";
+import { useState } from "react";
+import { NewCampaign } from "../newCampaign/Newcampaign";
 
 export default function Header({ activeTab, navItems, theme, toggleTheme }) {
   const tabTitle =
@@ -18,34 +20,43 @@ export default function Header({ activeTab, navItems, theme, toggleTheme }) {
     appearance: "Customize your dashboard appearance",
   };
 
+    const [showModal, setShowModal] = useState(false);
+  const [campaigns, setCampaigns] = useState([]); // Your existing campaigns state
+
+  const handleCreateCampaign = (newCampaign) => {
+    setCampaigns([...campaigns, newCampaign]);
+  };
+
   return (
+    <>
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4"
+      className="flex justify-between items-start md:items-center mb-6 gap-4"
     >
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+        <h1 className="text-xl md:text-3xl mt-8 font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-100 uppercase dark:to-slate-300 bg-clip-text text-transparent">
           {tabTitle}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm md:text-base">
           {tabDescription[activeTab] || "Overview of your referral programs"}
         </p>
       </div>
-      <div className="flex items-center gap-3 w-full md:w-auto">
+      <div className="flex flex-col-reverse md:flex-row items-end gap-3 md:w-auto">
         {activeTab !== "profile" &&
           activeTab !== "security" &&
           activeTab !== "appearance" && (
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium shadow-lg hover:shadow-blue-500/20 transition-all whitespace-nowrap"
+              onClick={() => setShowModal(true)}
+              className="flex items-center px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium shadow-lg hover:shadow-blue-500/20 transition-all whitespace-nowrap"
             >
               New Campaign <FiArrowUpRight />
             </motion.button>
           )}
-        <NotificationCenter />
+          <div className="flex w-full items-center justify-end">
         <button
           onClick={toggleTheme}
           className="p-2 rounded-full hover:bg-neutral-200 dark:hover:bg-slate-700 transition"
@@ -53,7 +64,16 @@ export default function Header({ activeTab, navItems, theme, toggleTheme }) {
         >
           {theme === "dark" ? <FaSun size={18} /> : <FaMoon size={18} />}
         </button>
+        <NotificationCenter />
+        </div>
       </div>
     </motion.header>
+
+     <NewCampaign 
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onCreate={handleCreateCampaign}
+      />
+    </>
   );
 }

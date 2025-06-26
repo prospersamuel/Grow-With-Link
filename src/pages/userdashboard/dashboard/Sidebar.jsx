@@ -16,6 +16,8 @@ export default function Sidebar({
   toggleSection,
   activeTab,
   setActiveTab,
+  handleTabClick, 
+  sidebarRef
 }) {
   return (
     <AnimatePresence>
@@ -25,7 +27,7 @@ export default function Sidebar({
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: -300, opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className={`w-72 md:w-[20%] bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-r border-slate-200/50 dark:border-slate-800/50 p-6 flex flex-col gap-8 fixed h-screen overflow-auto md:relative z-40`}
+          className={`w-72 md:w-[20%] bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-r border-slate-200/50 dark:border-slate-800/50 p-6 flex flex-col gap-8 fixed h-screen overflow-y-auto md:relative z-40`}
         >
           <motion.div
             whileHover={{ scale: 1.02 }}
@@ -76,7 +78,7 @@ export default function Sidebar({
                           key={item.id}
                           whileHover={{ x: 3 }}
                           whileTap={{ scale: 0.98 }}
-                          onClick={() => setActiveTab(item.id)}
+                          onClick={() => handleTabClick(item.id)}
                           className={`flex items-center gap-3 p-2.5 w-full rounded-lg text-sm font-medium transition-all ${
                             activeTab === item.id
                               ? "text-blue-600 dark:text-blue-400"

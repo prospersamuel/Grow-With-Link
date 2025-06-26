@@ -11,7 +11,6 @@ export function RewardsCenter() {
   const [minReferrals, setMinReferrals] = useState(1);
   const [payoutMethod, setPayoutMethod] = useState('manual');
   const [autoApprove, setAutoApprove] = useState(false);
-  const {theme} = useApp()
 
   const saveSettings = () => {
     Swal.fire({
@@ -25,10 +24,10 @@ export function RewardsCenter() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-6">
-      <div className="flex justify-between items-center mb-6">
+    <>
+      <div className="justify-between flex-wrap md:flex items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
-          <FiGift className="mr-2 text-blue-600" />
+          <FiGift className="mr-2 mb-5 md:mb-0 text-blue-600" />
           Rewards Center
         </h2>
         <div className="flex space-x-2">
@@ -226,6 +225,6 @@ export function RewardsCenter() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
