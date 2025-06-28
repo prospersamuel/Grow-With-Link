@@ -1,88 +1,105 @@
-import {
-  FaFacebookF,
-  FaInstagram,
-} from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaTwitter, FaLinkedinIn } from "react-icons/fa";
+import { FiArrowUpRight } from "react-icons/fi";
 import { useApp } from "../../context/Appcontext";
 
-
-
 export default function Footer() {
-
-const {openLogin} = useApp()
+  const { openLogin } = useApp();
 
   const socials = [
-    {icon: <FaFacebookF />, link: 'https://www.facebook.com/' },
-    {icon: <FaInstagram />, link: 'https://www.instagram.com/' },
-  ]
+    { icon: <FaFacebookF size={16} />, link: 'https://www.facebook.com/' },
+    { icon: <FaInstagram size={16} />, link: 'https://www.instagram.com/' },
+    { icon: <FaTwitter size={16} />, link: 'https://twitter.com/' },
+    { icon: <FaLinkedinIn size={16} />, link: 'https://linkedin.com/' },
+  ];
 
-  const footerLinks = [
-    {name: 'Features', link: '#features'},
-    {name: 'How It Works', link: '#howitworks'},
-    {name: 'FAQ', link: '#faq'},
-    {name: 'Pricing', link: '#pricing'},
-    {name: 'Contact Us', link: '#contact'},
-    {name: 'Policies', link: '#policies'},
-  ]
 
+  const productLinks = [
+    { name: 'Features', link: '#features' },
+    { name: 'How It Works', link: '#howitworks' },
+    { name: 'Pricing', link: '#pricing' },
+    { name: 'FAQ', link: '#faq' },
+    { name: 'Contact Us', link: '#contact' },
+  ];
+
+  const legalLinks = [
+    { name: 'Privacy', link: '#policies' },
+    { name: 'Terms', link: '#policies' },
+    { name: 'Cookie Policy', link: '#policies' },
+    { name: 'GDPR', link: '#policies' },
+  ];
 
   return (
-    <footer className="px-6 py-12 bg-neutral-50 dark:bg-slate-950 border-t border-neutral-300 dark:border-slate-800 text-sm text-neutral-700 dark:text-neutral-400 font-semibold">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-8">
-        {/* Left */}
-        <div>
-           <a href="/" className="text-2xl font-extrabold text-neutral-900 dark:text-white tracking-tight">
-          GrowWith<span className="text-primary">Link</span>
-        </a>
-          <p className="max-w-xs leading-relaxed">
-            Helping you grow with every click. Track referrals and reward
-            performance instantly.
-          </p>
-          <div className="flex space-x-4 mt-4">
-           {
-            socials.map((social, i) => (
-              <a 
-              key={i}
-              className='hover:text-primary transition'
-              target="_blank"
-              href={social.link}>{social.icon}</a>
-            ))
-           }
-          </div>
-        </div>
-
-        {/* Right */}
-        <div className="flex space-x-16 items-end">
-          <div>
-          <h4 className="text-lg font-bold mb-3 text-neutral-900 dark:text-white">
-            Quick Links
-          </h4>
-          <ul className="grid grid-cols-2 gap-x-2 gap-y-3">
-            {footerLinks.map((links, i)=>(
-              <li key={i}>
-                <a 
-                className="hover:text-primary"
-                href={links.link}>
-                  {links.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-          </div>
-        <button
-            onClick={openLogin}
-            className="bg-primary text-white px-4 py-2 rounded-xl font-semibold shadow hover:shadow-md transition"
-          >
-            Login
-          </button>
-        </div>
+    <footer className="relative px-6 py-16 bg-white dark:bg-slate-900 border-t border-neutral-100 dark:border-slate-800">
+      {/* Background elements */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-primary/5 to-transparent"></div>
       </div>
 
-      {/* Bottom Line */}
-      <div className="mt-10 text-center border-t pt-6 border-neutral-300 dark:border-slate-800 text-neutral-600 dark:text-neutral-500">
-        <p className="text-sm font-semibold">
-          &copy; {new Date().getFullYear()}  GrowWithLink. All rights
-          reserved.
-        </p>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between flex-wrap gap-8 mb-16">
+          {/* Brand info */}
+          <div className="lg:col-span-2">
+            <a href="/" className="text-2xl font-extrabold text-neutral-900 dark:text-white tracking-tight mb-4 inline-block">
+              Up<span className="text-primary">Link</span>
+            </a>
+            <p className="text-neutral-600 dark:text-neutral-400 mb-6 max-w-md">
+              The referral marketplace connecting businesses with skilled promoters to drive growth through trusted recommendations.
+            </p>
+            <div className="flex space-x-4">
+              {socials.map((social, i) => (
+                <a
+                  key={i}
+                  href={social.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-slate-800 flex items-center justify-center text-neutral-700 dark:text-neutral-300 hover:bg-primary/10 hover:text-primary transition-colors"
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Links columns */}
+          <div>
+            <h3 className="text-sm font-semibold text-neutral-900 dark:text-white uppercase tracking-wider mb-4">Links</h3>
+            <ul className="space-y-3">
+              {productLinks.map((link, i) => (
+                <li key={i}>
+                  <a href={link.link} className="text-neutral-600 dark:text-neutral-400 hover:text-primary transition-colors flex items-center">
+                    {link.name} <FiArrowUpRight className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom section */}
+        <div className="pt-8 border-t border-neutral-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="text-sm text-neutral-500 dark:text-neutral-500">
+            &copy; {new Date().getFullYear()} Uplink. All rights reserved.
+          </div>
+
+          <div className="flex flex-wrap gap-6">
+            {legalLinks.map((link, i) => (
+              <a 
+                key={i} 
+                href={link.link}
+                className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-primary transition-colors"
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+
+          <button
+            onClick={openLogin}
+            className="bg-gradient-to-r from-primary to-cyan-500 text-white px-6 py-3 rounded-lg font-semibold shadow hover:shadow-lg transition-all flex items-center gap-2"
+          >
+            Login to Dashboard <FiArrowUpRight />
+          </button>
+        </div>
       </div>
     </footer>
   );

@@ -1,7 +1,7 @@
 // src/lib/auth.js
 import { auth, db } from "./firebase";
-import { doc, setDoc, getDoc, Timestamp, updateDoc } from "firebase/firestore";
-import { updateProfile } from "firebase/auth"; // 👈 Add this at the top
+import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -11,63 +11,123 @@ import {
   signOut
 } from "firebase/auth";
 
-
+// Email/Password login
 export const loginUser = async (email, password) => {
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
   return userCredential.user;
 };
 
+// Logout
 export const handleLogout = async () => {
   await signOut(auth);
-  navigate("/");
 };
 
-export const registerUser = async (email, password, name, phone) => {
+// Email/Password registration with role
+export const registerUser = async (email, password, name, phone, role, companyName, companyWebsite) => {
+  if (!["promoter", "company"].includes(role)) {
+    throw new Error("Invalid role. Must be 'promoter' or 'company'.");
+  }
+
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
+
   const initialsURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
 
+  // Update display name and photo
   await updateProfile(user, {
-  displayName: name,
-  photoURL: initialsURL,
-});
-  
-  // Save extra info to Firestore
-  await setDoc(doc(db, "users", user.uid), {
+    displayName: name,
+    photoURL: initialsURL,
+  });
+
+  // Build Firestore schema
+  const baseData = {
+    uid: user.uid,
     email,
     name,
     phone,
+    role,
     provider: "email",
     photoURL: initialsURL,
     createdAt: Timestamp.now(),
-    uid: user.uid,
+    status: "active",
+  };
+
+  // Extend schema depending on role
+  const extraData = role === "promoter"
+    ? {
+        balance: 0,
+        totalEarned: 0,
+        referredVisitors: 0,
+        referredConversions: 0,
+        campaignsJoined: [],
+        withdrawalHistory: [],
+      }
+    : {
+        companyName: companyName || name,
+        companyWebsite: companyWebsite || "",
+        campaigns: [],
+        activeCampaignsCount: 0,
+        totalSpend: 0,
+        verified: false,
+      };
+
+  await setDoc(doc(db, "users", user.uid), {
+    ...baseData,
+    ...extraData,
   });
 
   return user;
 };
 
-export const resetPassword = (email) =>
-  sendPasswordResetEmail(auth, email);
+// Password reset
+export const resetPassword = (email) => sendPasswordResetEmail(auth, email);
 
-export const signInWithGoogle = async () => {
+// Google sign-in with role
+export const signInWithGoogle = async (roleIfNew = null, companyName, companyWebsite) => {
   const provider = new GoogleAuthProvider();
   const result = await signInWithPopup(auth, provider);
   const user = result.user;
 
   const userRef = doc(db, "users", user.uid);
   const userSnap = await getDoc(userRef);
-  
-  // Only write to Firestore if this is a new user
+
   if (!userSnap.exists()) {
-      await setDoc(userRef, {
-          fullName: user.displayName || "",
-          email: user.email || "",
-          photoURL: user.photoURL || "",
-          createdAt: Timestamp.now(),
-          provider: "google",
-          uid: user.uid,
-    });
+    if (!roleIfNew) {
+      throw new Error("This Google account is not registered yet. Please sign up and select your role.");
+    }
+
+    const baseData = {
+      uid: user.uid,
+      email: user.email || "",
+      name: user.displayName || "",
+      role: roleIfNew,
+      provider: "google",
+      photoURL: user.photoURL || "",
+      createdAt: Timestamp.now(),
+      status: "active",
+    };
+
+    const extraData =
+      roleIfNew === "promoter"
+        ? {
+            balance: 0,
+            totalEarned: 0,
+            referredVisitors: 0,
+            referredConversions: 0,
+            campaignsJoined: [],
+            withdrawalHistory: [],
+          }
+        : {
+            name: user.displayName || "",
+            companyName: companyName || user.displayName,
+            companyWebsite: companyWebsite || "",
+            campaigns: [],
+            activeCampaignsCount: 0,
+            totalSpend: 0,
+          };
+
+    await setDoc(userRef, { ...baseData, ...extraData });
   }
 
-  return user; // return the user for additional use if needed
+  return user;
 };

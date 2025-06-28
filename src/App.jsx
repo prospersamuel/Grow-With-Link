@@ -1,25 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/home/Home";
-import Dashboard from "./pages/userdashboard/dashboard/Dashboard";
+import Dashboard from "./pages/companyDashboard/dashboard/Dashboard";
 import { Toaster } from "react-hot-toast";
 import { useApp } from "./context/Appcontext";
 import Login from "./pages/Login/Login";
-import { useEffect } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function AppContent() {
   const { theme, showLogin, setShowLogin } = useApp();
-  const navigate = useNavigate();
-
-   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate('/dashboard'); // Redirect if already logged in
-      }
-    });
-    return unsubscribe;
-  }, [navigate]);
 
   return (
     <>
@@ -43,10 +30,6 @@ function AppContent() {
        {showLogin && (
         <Login
           onClose={() => setShowLogin(false)}
-          onLoginSuccess={() => {
-            setShowLogin(false);
-            navigate("/dashboard");
-          }}
         />
       )}
     </>
@@ -55,8 +38,6 @@ function AppContent() {
 
 export default function App() {
   return (
-    <Router>
       <AppContent />
-    </Router>
   );
 }
