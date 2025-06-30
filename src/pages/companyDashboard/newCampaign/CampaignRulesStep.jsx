@@ -2,7 +2,7 @@ import { FiCalendar } from "react-icons/fi";
 
 export const CampaignRulesStep = ({ campaignData, setCampaignData }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-[44vh] overflow-auto">
       <div className="p-4 bg-slate-50 dark:bg-slate-700/30 rounded-md">
         <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-4">
           Campaign Duration

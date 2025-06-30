@@ -3,7 +3,7 @@ export const BasicInfoStep = ({ campaignData, setCampaignData }) => {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Campaign Name *
         </label>
         <input
@@ -11,7 +11,6 @@ export const BasicInfoStep = ({ campaignData, setCampaignData }) => {
           value={campaignData.name}
           onChange={(e) => {
             setCampaignData({ ...campaignData, name: e.target.value });
-            generateCampaignSlug();
           }}
           className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="e.g. June Giveaway Campaign"
@@ -21,7 +20,7 @@ export const BasicInfoStep = ({ campaignData, setCampaignData }) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Target URL *
         </label>
         <input
@@ -37,7 +36,7 @@ export const BasicInfoStep = ({ campaignData, setCampaignData }) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Initial Status
         </label>
         <select

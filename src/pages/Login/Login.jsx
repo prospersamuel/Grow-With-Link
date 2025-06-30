@@ -233,7 +233,7 @@ export default function Login({ onClose }) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 max-w-md w-full border border-white/20 dark:border-slate-700/50"
+          className="relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl shadow-2xl p-5 max-w-md w-full border border-white/20 dark:border-slate-700/50"
         >
           {/* Close Button */}
           <button
@@ -480,7 +480,7 @@ export default function Login({ onClose }) {
                   onClick={handleSwitch}
                   className="font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
                 >
-                  Login in
+                  Login
                 </button>
               </>
             )}

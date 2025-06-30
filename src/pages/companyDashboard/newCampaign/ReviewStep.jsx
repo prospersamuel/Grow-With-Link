@@ -3,7 +3,7 @@ import {FiCopy} from "react-icons/fi";
 export function ReviewStep({ campaignData, copyReferralLink, calculateEarnings }) {
   return (
     <>
-      <div className="space-y-6">
+      <div className="space-y-6 h-[44vh] overflow-auto">
         <div className="p-6 bg-slate-50 dark:bg-slate-700/30 rounded-md">
           <h3 className="text-lg font-medium text-slate-800 dark:text-slate-200 mb-4">
             Campaign Summary

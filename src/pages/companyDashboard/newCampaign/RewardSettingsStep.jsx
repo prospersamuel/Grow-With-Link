@@ -6,8 +6,30 @@ export const RewardSettingsStep = ({
   setCampaignData,
   calculateEarnings,
 }) => {
+  const handleRewardAmountChange = (e, type) => {
+    const value = Math.max(0, parseFloat(e.target.value)); // Ensure it's non-negative
+    setCampaignData({
+      ...campaignData,
+      [type]: value,
+    });
+  };
+
+  const handleCustomRewardChange = (e) => {
+    setCampaignData({
+      ...campaignData,
+      customReward: e.target.value,
+    });
+  };
+
+  const handleRewardTriggerChange = (e) => {
+    setCampaignData({
+      ...campaignData,
+      rewardTrigger: e.target.value,
+    });
+  };
+
   return (
-    <div className="space-y-4 p-4 bg-slate-50 dark:bg-slate-700/30 rounded-md">
+    <div className="space-y-4 p-4 dark:bg-slate-700/30 rounded-md">
       <h4 className="font-medium text-slate-700 dark:text-slate-300">
         Reward Settings
       </h4>
@@ -28,13 +50,22 @@ export const RewardSettingsStep = ({
           }
         >
           <TabList className="flex border-b border-slate-200 dark:border-slate-600">
-            <Tab className="md:px-4 md:py-2 px-2 py-1 cursor-pointer focus:outline-none">
+            <Tab
+              className="md:px-4 md:py-2 px-2 py-1 cursor-pointer focus:outline-none"
+              selectedClassName="bg-primary rounded-t-md dark:text-white text-white"
+            >
               Percentage
             </Tab>
-            <Tab className="md:px-4 md:py-2 px-2 py-1 cursor-pointer focus:outline-none">
+            <Tab
+              className="md:px-4 md:py-2 px-2 py-1 cursor-pointer focus:outline-none"
+              selectedClassName="bg-primary dark:text-white text-white rounded-t-md"
+            >
               Fixed
             </Tab>
-            <Tab className="md:px-4 md:py-2 px-2 py-1 cursor-pointer focus:outline-none">
+            <Tab
+              className="md:px-4 md:py-2 px-2 py-1 cursor-pointer focus:outline-none"
+              selectedClassName="bg-primary dark:text-white text-white rounded-t-md"
+            >
               Custom
             </Tab>
           </TabList>
@@ -48,10 +79,7 @@ export const RewardSettingsStep = ({
                   max="100"
                   value={campaignData.rewardAmount}
                   onChange={(e) =>
-                    setCampaignData({
-                      ...campaignData,
-                      rewardAmount: e.target.value,
-                    })
+                    handleRewardAmountChange(e, "rewardAmount")
                   }
                   className="w-24 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -69,10 +97,7 @@ export const RewardSettingsStep = ({
                   min="1"
                   value={campaignData.rewardAmount}
                   onChange={(e) =>
-                    setCampaignData({
-                      ...campaignData,
-                      rewardAmount: e.target.value,
-                    })
+                    handleRewardAmountChange(e, "rewardAmount")
                   }
                   className="w-24 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -83,12 +108,7 @@ export const RewardSettingsStep = ({
               <input
                 type="text"
                 value={campaignData.customReward}
-                onChange={(e) =>
-                  setCampaignData({
-                    ...campaignData,
-                    customReward: e.target.value,
-                  })
-                }
+                onChange={handleCustomRewardChange}
                 className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="e.g. Free month, Store credit, etc."
               />
@@ -103,15 +123,14 @@ export const RewardSettingsStep = ({
         </label>
         <select
           value={campaignData.rewardTrigger}
-          onChange={(e) =>
-            setCampaignData({ ...campaignData, rewardTrigger: e.target.value })
-          }
+          onChange={handleRewardTriggerChange}
           className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="signup">On sign up</option>
           <option value="purchase">On first purchase</option>
           <option value="task">On completing a task</option>
         </select>
+
         {campaignData.rewardTrigger === "task" && (
           <div className="mt-2">
             <input

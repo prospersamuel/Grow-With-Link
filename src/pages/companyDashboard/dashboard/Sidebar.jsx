@@ -17,7 +17,6 @@ export default function Sidebar({
   activeTab,
   setActiveTab,
   handleTabClick, 
-  sidebarRef
 }) {
   return (
     <AnimatePresence>
@@ -42,12 +41,19 @@ export default function Sidebar({
               <div key={section.section} className="mt-1">
                 <button
                   onClick={() => {
-                    toggleSection(section.section);
-                    if (section.section === "dashboard") {
-                      setActiveTab("overview");
+                    // For single-item sections, directly activate their item
+                    if (section.items.length === 1) {
+                      handleTabClick(section.items[0].id);
+                    } else {
+                      toggleSection(section.section);
                     }
                   }}
-                  className="flex items-center justify-between w-full p-3 rounded-xl hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
+                  className={`flex items-center justify-between w-full p-3 rounded-xl transition-colors ${
+                    (section.items.length === 1 && activeTab === section.items[0].id) ||
+                    (section.items.some(item => item.id === activeTab))
+                      ? "bg-blue-100/50 dark:bg-blue-900/50"
+                      : "hover:bg-slate-100/50 dark:hover:bg-slate-800/50"
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800">
@@ -65,7 +71,7 @@ export default function Sidebar({
                 </button>
 
                 <AnimatePresence>
-                  {expandedSections[section.section] && section.items.length > 1 && (
+                  {section.items.length > 1 && expandedSections[section.section] && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
@@ -100,6 +106,36 @@ export default function Sidebar({
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                {/* Special case for single-item sections - show their item as active when selected */}
+                {section.items.length === 1 && activeTab === section.items[0].id && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="ml-4 pl-6 border-l border-slate-200/50 dark:border-slate-700/50"
+                  >
+                    <motion.div
+                      className={`flex items-center gap-3 p-2.5 w-full rounded-lg text-sm font-medium ${
+                        activeTab === section.items[0].id
+                          ? "text-blue-600 dark:text-blue-400"
+                          : "text-slate-600 dark:text-slate-300"
+                      }`}
+                    >
+                      <div
+                        className={`p-1.5 rounded-md ${
+                          activeTab === section.items[0].id
+                            ? "bg-blue-100/80 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300"
+                            : "bg-slate-100/50 dark:bg-slate-700/50"
+                        }`}
+                      >
+                        {section.items[0].icon}
+                      </div>
+                      {section.items[0].title}
+                    </motion.div>
+                  </motion.div>
+                )}
               </div>
             ))}
           </nav>

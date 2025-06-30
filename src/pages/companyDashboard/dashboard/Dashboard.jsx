@@ -10,14 +10,12 @@ import {
   FiPieChart,
   FiZap,
   FiTrendingUp,
-  FiAward,
   FiMenu,
   FiX,
   FiUser,
   FiLock,
 } from "react-icons/fi";
 import ReferralList from "../referralList/ReferralList";
-import Leaderboard from "../leadrboard/Leaderboard";
 import ReferralChart from "../referralChart/ReferralChart";
 import AIAssistant from "../aiAssistance/AIAssistant";
 import Wallet from "../wallet/Wallet";
@@ -29,12 +27,12 @@ import {
   SecuritySettings,
 } from "../userSettings/Usersettings";
 import Transactions from "../transactions/Transactions";
-import { RewardsCenter } from "../rewardCard/RewardCard";
-import useDashboardStats from "../../../hooks/useDashboardStats";
+import CompanyStats from "../../../hooks/useCompanyStats";
 import DashboardOverview from "./DashboardOverview";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { auth } from "../../../services/firebase";
+import { NewCampaign } from "../newCampaign/Newcampaign";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -77,7 +75,7 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
-  const stats = useDashboardStats(user);
+  const stats = CompanyStats(user);
 
   const navItems = [
     {
@@ -109,12 +107,6 @@ export default function Dashboard() {
           title: "Growth Metrics",
           icon: <FiTrendingUp />,
           component: <ReferralChart />,
-        },
-        {
-          id: "leaderboard",
-          title: "Top Referrers",
-          icon: <FiAward />,
-          component: <Leaderboard />,
         },
       ],
     },
@@ -149,10 +141,10 @@ export default function Dashboard() {
           component: <CampaignTable />,
         },
         {
-          id: "rewards",
-          title: "Rewards",
+          id: "newCampaign",
+          title: "New Campaign",
           icon: <FiCreditCard />,
-          component: <RewardsCenter />,
+          component: <NewCampaign />,
         },
       ],
     },
@@ -177,21 +169,20 @@ export default function Dashboard() {
     },
   ];
 
-  const toggleSection = (section) => {
-    if (section === "dashboard") {
+const toggleSection = (section) => {
+  // If it's the dashboard section, always set activeTab to "overview"
+  if (section === "dashboard") {
     setActiveTab("overview");
     if (isMobile) setSidebarOpen(false);
+    return;
   }
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-    
-    // If it's the dashboard section, set activeTab to "overview"
-    if (section === "dashboard") {
-      setActiveTab("overview");
-    }
-  };
+  
+  // For other sections, toggle their expanded state
+  setExpandedSections((prev) => ({
+    ...prev,
+    [section]: !prev[section],
+  }));
+};
 
   const handleTabClick = (id) => {
   setActiveTab(id);

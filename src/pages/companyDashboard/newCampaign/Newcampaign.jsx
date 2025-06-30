@@ -1,5 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../../../services/firebase";
 import {
   FiPlus,
   FiCopy,
@@ -17,7 +19,7 @@ import { RewardSettingsStep } from "./RewardSettingsStep";
 import { BasicInfoStep } from "./BasicInfoStep";
 import { StepNavigation } from "./StepNavigation";
 
-export const NewCampaign = ({ isOpen, onClose, onCreate }) => {
+export const NewCampaign = ({ isOpen, onCreate }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [campaignData, setCampaignData] = useState({
     name: "",
@@ -108,78 +110,94 @@ export const NewCampaign = ({ isOpen, onClose, onCreate }) => {
     setCampaignData((prev) => ({ ...prev, customSlug: slug }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (currentStep < steps.length - 1) {
-      nextStep();
-      return;
-    }
+  if (currentStep < steps.length - 1) {
+    nextStep();
+    return;
+  }
 
-    if (!campaignData.name.trim()) {
-      toast.error("Campaign name is required");
-      setCurrentStep(0);
-      return;
-    }
-    if (!campaignData.targetUrl.trim() || !isValidUrl(campaignData.targetUrl)) {
-      toast.error("Valid target URL is required");
-      setCurrentStep(0);
-      return;
-    }
+  // Validations
+  if (!campaignData.name.trim()) {
+    toast.error("Campaign name is required");
+    setCurrentStep(0);
+    return;
+  }
+  if (!campaignData.targetUrl.trim() || !isValidUrl(campaignData.targetUrl)) {
+    toast.error("Valid target URL is required");
+    setCurrentStep(0);
+    return;
+  }
 
-    const referralLink =
-      campaignData.linkFormat === "query"
-        ? `https://yourdomain.com?ref=${campaignData.referralCode}`
-        : `https://yourdomain.com/campaign/${
-            campaignData.customSlug || "ref"
-          }/${campaignData.referralCode}`;
+  // Create referral link
+  const referralLink =
+    campaignData.linkFormat === "query"
+      ? `https://yourdomain.com?ref=${campaignData.referralCode}`
+      : `https://yourdomain.com/campaign/${
+          campaignData.customSlug || "ref"
+        }/${campaignData.referralCode}`;
 
-    const utmLink = appendUtmParams(
-      campaignData.targetUrl,
-      campaignData.utmParams.source,
-      campaignData.utmParams.medium,
-      campaignData.utmParams.campaign || campaignData.name.replace(/\s+/g, "_")
-    );
+  // Append UTM
+  const utmLink = appendUtmParams(
+    campaignData.targetUrl,
+    campaignData.utmParams.source,
+    campaignData.utmParams.medium,
+    campaignData.utmParams.campaign || campaignData.name.replace(/\s+/g, "_")
+  );
 
-    const newCampaign = {
-      id: Date.now(),
-      name: campaignData.name,
-      status: campaignData.status,
-      targetUrl: utmLink,
-      clicks: 0,
-      conversions: 0,
-      roi: 0,
-      reward: {
-        type: campaignData.rewardType,
-        amount: campaignData.rewardAmount,
-        custom: campaignData.customReward,
-        trigger: campaignData.rewardTrigger,
-      },
-      duration: {
-        start: campaignData.startDate,
-        end: campaignData.hasEndDate ? campaignData.endDate : null,
-      },
-      limits: {
-        total: campaignData.referralLimit.total || null,
-        perReferrer: campaignData.referralLimit.perReferrer || null,
-        perReferred: campaignData.referralLimit.perReferred || null,
-      },
-      visibility: campaignData.visibility,
-      approvalType: campaignData.approvalType,
-      customContent: {
-        banner: campaignData.customBanner,
-        headline: campaignData.customHeadline,
-      },
-      referralCode: campaignData.referralCode,
-      referralLink: referralLink,
-      linkFormat: campaignData.linkFormat,
-      createdAt: new Date().toISOString(),
-    };
-
-    onCreate(newCampaign);
-    onClose();
-    toast.success("Campaign created successfully!");
+  const newCampaign = {
+    name: campaignData.name,
+    status: campaignData.status,
+    targetUrl: utmLink,
+    clicks: 0,
+    conversions: 0,
+    roi: 0,
+    reward: {
+      type: campaignData.rewardType,
+      amount: campaignData.rewardAmount,
+      custom: campaignData.customReward,
+      trigger: campaignData.rewardTrigger,
+    },
+    duration: {
+      start: campaignData.startDate,
+      end: campaignData.hasEndDate ? campaignData.endDate : null,
+    },
+    limits: {
+      total: campaignData.referralLimit.total || null,
+      perReferrer: campaignData.referralLimit.perReferrer || null,
+      perReferred: campaignData.referralLimit.perReferred || null,
+    },
+    visibility: campaignData.visibility,
+    approvalType: campaignData.approvalType,
+    customContent: {
+      banner: campaignData.customBanner,
+      headline: campaignData.customHeadline,
+    },
+    referralCode: campaignData.referralCode,
+    referralLink: referralLink,
+    linkFormat: campaignData.linkFormat,
+    createdAt: serverTimestamp(),
   };
+
+  try {
+    const cleanCampaign = JSON.parse(JSON.stringify(newCampaign))
+    
+    await addDoc(collection(db, "campaigns"), cleanCampaign);
+    console.log(cleanCampaign);
+    toast.success("Campaign created successfully!");
+    // Optionally reset form
+    setCampaignData(INITIAL_CAMPAIGN_DATA);
+    setCurrentStep(0);
+    // Close modal
+    if (typeof onCreate === "function") {
+      onCreate(); 
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error("Error creating campaign");
+  }
+};
 
   const copyReferralLink = () => {
     const link =
@@ -238,31 +256,12 @@ export const NewCampaign = ({ isOpen, onClose, onCreate }) => {
 
   return (
     <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-        >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.95 }}
-            className="relative bg-white dark:bg-slate-800 h-fit max-h-[80vh] overflow-auto rounded-lg shadow-xl w-[90%] md:w-full md:max-w-4xl"
-          >
             <div className="p-4">
-              <div className="sticky top-0 bg-slate-800 border-b-2 mb-2 border-primary pt-2 z-50">
+              <div className="border-b-2 mb-6 border-primary pt-2 z-50">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg uppercase font-semibold text-slate-800 dark:text-slate-200">
                     Create New Campaign
                   </h3>
-                  <button
-                    onClick={onClose}
-                    className="text-slate-400 font-extrabold text-4xl hover:text-slate-600 dark:hover:text-slate-300"
-                  >
-                    ×
-                  </button>
                 </div>
 
                 {/* Stepper */}
@@ -346,9 +345,6 @@ export const NewCampaign = ({ isOpen, onClose, onCreate }) => {
                 />
               </form>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
     </AnimatePresence>
   );
 };

@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import { FiArrowUpRight } from "react-icons/fi";
 import { FaSun, FaMoon } from "react-icons/fa";
 import NotificationCenter from "../notification/NotificationCenter";
-import { useState } from "react";
-import { NewCampaign } from "../newCampaign/Newcampaign";
 
 export default function Header({ activeTab, navItems, theme, toggleTheme }) {
   const tabTitle =
@@ -20,12 +18,6 @@ export default function Header({ activeTab, navItems, theme, toggleTheme }) {
     appearance: "Customize your dashboard appearance",
   };
 
-    const [showModal, setShowModal] = useState(false);
-  const [campaigns, setCampaigns] = useState([]); // Your existing campaigns state
-
-  const handleCreateCampaign = (newCampaign) => {
-    setCampaigns([...campaigns, newCampaign]);
-  };
 
   return (
     <>
@@ -50,7 +42,6 @@ export default function Header({ activeTab, navItems, theme, toggleTheme }) {
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => setShowModal(true)}
               className="flex items-center px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium shadow-lg hover:shadow-blue-500/20 transition-all whitespace-nowrap"
             >
               New Campaign <FiArrowUpRight />
@@ -68,12 +59,6 @@ export default function Header({ activeTab, navItems, theme, toggleTheme }) {
         </div>
       </div>
     </motion.header>
-
-     <NewCampaign 
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onCreate={handleCreateCampaign}
-      />
     </>
   );
 }

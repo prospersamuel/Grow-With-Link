@@ -14,7 +14,7 @@ export const CustomizationStep = ({ campaignData, setCampaignData }) => {
   };
 
   return (
-    <div className="space-y-4 overflow-auto">
+    <div className="space-y-4 overflow-auto h-[44vh]">
       <div className="p-4 bg-slate-50 dark:bg-slate-700/30 rounded-md">
         <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-4">
           Custom Referrer Landing Page

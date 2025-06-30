@@ -2,28 +2,27 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import {
-  FiCopy,
   FiArrowUpRight,
   FiArrowDownLeft,
   FiX,
 } from "react-icons/fi";
+import {LuRefreshCcw} from "react-icons/lu"
 import Transactions from "../transactions/Transactions";
+import useCompanyData from "../../../hooks/useCompanyStats";
 
 export default function Wallet() {
   const [showDeposit, setShowDeposit] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
-  const [showSend, setShowSend] = useState(false);
-
-  const copyAddress = () => {
-    navigator.clipboard.writeText("0x742d35Cc6634C0532925a3b844Bc454e4438f44e");
-    // Show toast notification here
-  };
 
   const transactionButtons = [
     { name: "Deposit", icon: <FiArrowDownLeft /> },
-    { name: "Send", icon: <FiArrowUpRight /> },
     { name: "Withdraw", icon: <FiArrowUpRight /> },
   ];
+
+    const { data, loading, error, refresh } = useCompanyData();
+  if (error) return <p>Error: {error}</p>;
+  
+
 
   return (
     <div className="space-y-6 h-[73vh] overflow-auto">
@@ -31,14 +30,16 @@ export default function Wallet() {
         <div className="flex justify-between items-start">
           <div>
             <h2 className="text-lg font-medium">Wallet Balance</h2>
-            <p className="text-3xl font-bold mt-2">₦5,950.00</p>
-            <p className="text-blue-100 mt-1">0x742d...f44e</p>
+            <p className="text-3xl font-bold mt-2">{
+              loading ? <div className="w-8 h-4 bg-gradient-to-r from-blue-500 to-indigo-500 animate-pulse"></div> :
+            data.balance || 'Not set'
+            }</p>
           </div>
-          <button
-            onClick={copyAddress}
+           <button
+           onClick={refresh}
             className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition"
           >
-            <FiCopy />
+            <LuRefreshCcw />
           </button>
         </div>
 
@@ -49,10 +50,8 @@ export default function Wallet() {
               onClick={() => {
                 if (button.name === "Deposit") {
                   setShowDeposit(true);
-                } else if (button.name === "Withdraw") {
+                } else{
                   setShowWithdraw(true);
-                } else {
-                  setShowSend(true);
                 }
               }}
               className="md:flex-1 flex items-center justify-center gap-2 bg-white/10 py-1.5 px-2 hover:bg-white/20 md:py-3 md:px-4 rounded-lg transition"
@@ -84,11 +83,6 @@ export default function Wallet() {
         {showWithdraw && (
           <WalletModal title="Withdraw" onClose={() => setShowWithdraw(false)}>
             {/* Withdraw form content */}
-          </WalletModal>
-        )}
-        {showSend && (
-          <WalletModal title="Send" onClose={() => setShowSend(false)}>
-            {/* Send form content */}
           </WalletModal>
         )}
       </AnimatePresence>
@@ -129,18 +123,6 @@ function WalletModal({ title, onClose, children }) {
                 placeholder="0.00"
               />
             </div>
-            {title === "Send" && (
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Recipient Address
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent"
-                  placeholder="0x..."
-                />
-              </div>
-            )}
             <button className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
               Confirm {title}
             </button>

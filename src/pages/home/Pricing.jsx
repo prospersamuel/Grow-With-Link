@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { useApp } from "../../context/Appcontext";
-import { FaCrown, FaCheck, FaRegHandshake } from "react-icons/fa";
+import { FaCheck, FaRegHandshake } from "react-icons/fa";
 import { FiZap, FiUsers, FiSettings } from "react-icons/fi";
 
 const plans = [
   {
     name: "Promoter",
-    price: "₦5000",
+    price: "₦4,999",
     description: "For individuals who want to earn by referring",
     features: [
       "Browse and join campaigns",
@@ -21,7 +21,7 @@ const plans = [
   },
   {
     name: "Business",
-    price: "₦29/mo",
+    price: "₦29,000/mo",
     description: "For companies running referral campaigns",
     features: [
       "Create unlimited campaigns",
