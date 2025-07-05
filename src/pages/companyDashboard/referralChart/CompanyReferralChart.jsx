@@ -21,7 +21,7 @@ ChartJS.register(
   Tooltip
 );
 
-export default function ReferralChart() {
+export default function CompanyReferralChart() {
   const [timeRange, setTimeRange] = useState("90d");
   const [showDetails, setShowDetails] = useState(false);
   

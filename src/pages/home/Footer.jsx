@@ -25,7 +25,6 @@ export default function Footer() {
     { name: 'Privacy', link: '#policies' },
     { name: 'Terms', link: '#policies' },
     { name: 'Cookie Policy', link: '#policies' },
-    { name: 'GDPR', link: '#policies' },
   ];
 
   return (

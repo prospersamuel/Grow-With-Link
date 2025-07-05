@@ -7,7 +7,7 @@ import {
 } from "react-icons/fi";
 import { handleLogout } from "../../../services/Auth";
 
-export default function Sidebar({
+export default function CompanySidebar({
   photoURL,
   username,
   sidebarOpen,

@@ -4,37 +4,33 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiHome,
-  FiUsers,
   FiSettings,
   FiCreditCard,
   FiPieChart,
   FiZap,
-  FiTrendingUp,
   FiMenu,
   FiX,
   FiUser,
   FiLock,
 } from "react-icons/fi";
-import ReferralList from "../referralList/ReferralList";
-import ReferralChart from "../referralChart/ReferralChart";
-import AIAssistant from "../aiAssistance/AIAssistant";
-import Wallet from "../wallet/Wallet";
+import AIAssistant from "../../../pages/companyDashboard/aiAssistance/AIAssistant";
+import Wallet from "../../promoterdashboard/Wallet/PromoterWallet";
 import { useMediaQuery } from "react-responsive";
-import CampaignTable from "../campaignTable/CampaignTable";
 import { useApp } from "../../../context/Appcontext";
 import {
   ProfileSettings,
   SecuritySettings,
-} from "../userSettings/Usersettings";
-import Transactions from "../transactions/Transactions";
+} from "../../companyDashboard/userSettings/Usersettings";
+import Transactions from "../../promoterdashboard/transactions/PromoterTransactions";
 import CompanyStats from "../../../hooks/useCompanyStats";
-import DashboardOverview from "./DashboardOverview";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
 import { auth } from "../../../services/firebase";
-import { NewCampaign } from "../newCampaign/Newcampaign";
+import PromoterSidebar from "./PromoterSidebar";
+import PromoterDashboardOverview from "./PromoterDashboardOverview";
+import PromoterHeader from "./PromoterHeader";
+import PromoterCampaigns from "../PromoterCampaigns/PromoterCampaigns";
+import { BrowseCampaigns } from "../browseCampaigns/BrowseCampaigns";
 
-export default function Dashboard() {
+export default function PromoterDashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -87,7 +83,7 @@ export default function Dashboard() {
           id: "overview",
           title: "Overview",
           icon: <FiHome />,
-          component: <DashboardOverview stats={stats} />,
+          component: <PromoterDashboardOverview stats={stats} />,
         },
       ],
     },
@@ -97,16 +93,10 @@ export default function Dashboard() {
       icon: <FiPieChart />,
       items: [
         {
-          id: "referrals",
-          title: "Referral Network",
-          icon: <FiUsers />,
-          component: <ReferralList />,
-        },
-        {
-          id: "traffic",
-          title: "Growth Metrics",
-          icon: <FiTrendingUp />,
-          component: <ReferralChart />,
+          id: "Browse Campaigns",
+          title: "BrowseCampaigns",
+          icon: <FiCreditCard />,
+          component: <BrowseCampaigns />,
         },
       ],
     },
@@ -138,13 +128,7 @@ export default function Dashboard() {
           id: "campaigns",
           title: "Campaigns",
           icon: <FiZap />,
-          component: <CampaignTable />,
-        },
-        {
-          id: "newCampaign",
-          title: "New Campaign",
-          icon: <FiCreditCard />,
-          component: <NewCampaign />,
+          component: <PromoterCampaigns />,
         },
       ],
     },
@@ -200,11 +184,10 @@ const toggleSection = (section) => {
       const foundItem = section.items.find((item) => item.id === activeTab);
       if (foundItem) return foundItem.component;
     }
-    return <DashboardOverview stats={stats} />;
+    return <PromoterDashboardOverview stats={stats} />;
   };
-
   return (
-    <div className="flex min-h-screen bg-gradient-to-br h-screen overflow-y-auto from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-slate-100 relative">
+    <div className="flex min-h-screen h-screen bg-gradient-to-br overflow-y-auto from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-slate-100 relative">
       {/* Mobile Sidebar Toggle */}
       <button
         onClick={toggleSidebar}
@@ -215,7 +198,7 @@ const toggleSection = (section) => {
 
       {/* Glass Morphism Sidebar */}
       <AnimatePresence>
-        <Sidebar
+        <PromoterSidebar
           photoURL={photoURL}
           username={username}
           sidebarOpen={sidebarOpen}
@@ -234,7 +217,7 @@ const toggleSection = (section) => {
       }`}
       >
         {/* Animated Header */}
-        <Header
+        <PromoterHeader
           activeTab={activeTab}
           navItems={navItems}
           theme={theme}
@@ -247,7 +230,7 @@ const toggleSection = (section) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 p-4 md:p-6 min-h-[400px] w-full"
+          className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/50 dark:border-slate-700/50 p-4 md:p-6 min-h-[400px] md:h-[80vh] h-[75vh] overflow-auto w-full"
         >
           {loading ? (
             <div className="flex items-center justify-center h-full">

@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { auth, db } from "../services/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { recomputeActiveCampaignCount, recomputeTotalSpent } from "../util/recomputeActiveCampaignCount";
 
 export default function useCompanyCampaigns() {
   const [campaigns, setCampaigns] = useState([]);
@@ -21,14 +22,31 @@ export default function useCompanyCampaigns() {
     setError(null);
 
     try {
-      const docRef = doc(db, "users", userId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setCampaigns(data.campaigns || []);
-      } else {
+      // Get user document for campaign IDs
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
         setError("User data not found.");
+        setCampaigns([]);
+        setLoading(false);
+        return;
       }
+
+      const userData = userSnap.data();
+      const campaignIds = userData.campaigns || [];
+
+      // Fetch campaigns
+      const campaignPromises = campaignIds.map(async (id) => {
+        const cRef = doc(db, "campaigns", id);
+        const cSnap = await getDoc(cRef);
+        if (cSnap.exists()) {
+          return { id: cSnap.id, ...cSnap.data() };
+        }
+        return null;
+      });
+
+      const campaignsData = await Promise.all(campaignPromises);
+      setCampaigns(campaignsData.filter((c) => c !== null));
     } catch (err) {
       console.error(err);
       setError("Error loading campaigns.");
@@ -55,54 +73,50 @@ export default function useCompanyCampaigns() {
   };
 
   const updateCampaign = async (campaignId, updates) => {
-    if (!uid) return;
-
-    const userRef = doc(db, "users", uid);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
-      const updatedCampaigns = (userData.campaigns || []).map((c) =>
-        c.id === campaignId ? { ...c, ...updates } : c
-      );
-      await updateDoc(userRef, { campaigns: updatedCampaigns });
-      setCampaigns(updatedCampaigns);
+    const campaignRef = doc(db, "campaigns", campaignId);
+    await updateDoc(campaignRef, updates);
+    
+    if (updates.status) {
+      await recomputeActiveCampaignCount(uid)
     }
+    if (updates.budget) {
+      await recomputeTotalSpent(uid)
+    }
+    refreshCampaigns();
   };
 
   const toggleCampaignStatus = async (campaignId) => {
-    if (!uid) return;
-
-    const userRef = doc(db, "users", uid);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
-      const updatedCampaigns = (userData.campaigns || []).map((c) =>
-        c.id === campaignId
-          ? {
-              ...c,
-              status: c.status === "active" ? "paused" : "active",
-            }
-          : c
-      );
-      await updateDoc(userRef, { campaigns: updatedCampaigns });
-      setCampaigns(updatedCampaigns);
+    const campaignRef = doc(db, "campaigns", campaignId);
+    const campaignSnap = await getDoc(campaignRef);
+    if (campaignSnap.exists()) {
+      const currentStatus = campaignSnap.data().status;
+      const newStatus = currentStatus === "active" ? "paused" : "active";
+      await updateDoc(campaignRef, { status: newStatus });
+      refreshCampaigns();
+      await recomputeActiveCampaignCount(uid)
     }
   };
-
+  
   const deleteCampaign = async (campaignId) => {
     if (!uid) return;
+    // Remove from campaigns collection
+    const campaignRef = doc(db, "campaigns", campaignId);
+    await deleteDoc(campaignRef);
 
+    // Remove from user campaign IDs array
     const userRef = doc(db, "users", uid);
     const userSnap = await getDoc(userRef);
     if (userSnap.exists()) {
-      const userData = userSnap.data();
-      const updatedCampaigns = (userData.campaigns || []).filter(
-        (c) => c.id !== campaignId
-      );
+      const data = userSnap.data();
+      const updatedCampaigns = (data.campaigns || []).filter((id) => id !== campaignId);
       await updateDoc(userRef, { campaigns: updatedCampaigns });
-      setCampaigns(updatedCampaigns);
+      await recomputeActiveCampaignCount(uid)
+      await recomputeTotalSpent(uid)
+      
     }
+    refreshCampaigns();
   };
+
 
   return {
     campaigns,

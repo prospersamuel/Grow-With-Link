@@ -5,7 +5,7 @@ import { FiUser, FiMoreVertical, FiSearch, FiChevronLeft, FiChevronRight, FiUplo
 const mockData = Array.from({ length: 45 }, (_, i) => ({
   id: `ref${i + 1}`,
   referrer: `user${i + 1}`,
-  reward: `$${Math.floor(Math.random() * 50) + 10}`,
+  reward: `₦${Math.floor(Math.random() * 50) + 10}`,
   status: ['Pending', 'Approved', 'Rejected'][Math.floor(Math.random() * 3)],
   date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
 }));

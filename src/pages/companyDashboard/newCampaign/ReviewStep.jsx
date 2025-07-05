@@ -41,13 +41,23 @@ export function ReviewStep({ campaignData, copyReferralLink, calculateEarnings }
                   {campaignData.rewardType === "percentage"
                     ? `${campaignData.rewardAmount}% of purchase`
                     : campaignData.rewardType === "fixed"
-                    ? `$${campaignData.rewardAmount} fixed`
+                    ? `₦${campaignData.rewardAmount} fixed`
                     : campaignData.customReward}
                 </p>
                 <p>
                   <span className="text-slate-500">Trigger:</span> On{" "}
                   {campaignData.rewardTrigger}
                 </p>
+                {campaignData.rewardTrigger === 'task' ?
+                
+                  <textarea 
+                  value={campaignData.customTask} 
+                  rows={2} 
+                  readOnly 
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500" name="" id="">
+
+                  </textarea> : ''
+              }
               </div>
             </div>
 
@@ -83,13 +93,7 @@ export function ReviewStep({ campaignData, copyReferralLink, calculateEarnings }
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={
-                    campaignData.linkFormat === "query"
-                      ? `${campaignData.targetUrl}?ref=${campaignData.referralCode}`
-                      : `${campaignData.targetUrl}campaign/${
-                          campaignData.customSlug || "ref"
-                        }/${campaignData.referralCode}`
-                  }
+                  value={campaignData.targetUrl}
                   readOnly
                   className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-slate-100 dark:bg-slate-700 text-sm truncate"
                 />

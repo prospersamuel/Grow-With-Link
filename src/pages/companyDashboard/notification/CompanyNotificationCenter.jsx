@@ -3,13 +3,13 @@ import { FiBell, FiCheck, FiX, FiZap } from "react-icons/fi";
 import { useState, useEffect } from "react";
 
 const mockNotifications = [
-  { id: 1, type: 'payout', message: '$42.50 payout processed to Sam W.', time: '2m ago', read: false },
+  { id: 1, type: 'payout', message: '₦42.50 payout processed to Sam W.', time: '2m ago', read: false },
   { id: 2, type: 'referral', message: 'New referral from Alex J. via Summer Special', time: '15m ago', read: false },
   { id: 3, type: 'system', message: 'Campaign "Holiday Promo" completed', time: '1h ago', read: true },
   { id: 4, type: 'alert', message: 'Conversion rate dropped below threshold', time: '3h ago', read: true }
 ];
 
-export default function NotificationCenter() {
+export default function CompanyNotificationCenter() {
   const [notifications, setNotifications] = useState(mockNotifications);
   const [isOpen, setIsOpen] = useState(false);
 

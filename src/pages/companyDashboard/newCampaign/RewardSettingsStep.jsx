@@ -20,6 +20,12 @@ export const RewardSettingsStep = ({
       customReward: e.target.value,
     });
   };
+  const handleCustomTaskChange = (e) => {
+    setCampaignData({
+      ...campaignData,
+      customTask: e.target.value,
+    });
+  };
 
   const handleRewardTriggerChange = (e) => {
     setCampaignData({
@@ -91,7 +97,7 @@ export const RewardSettingsStep = ({
             </TabPanel>
             <TabPanel>
               <div className="flex items-center gap-4">
-                <span className="text-slate-500">$</span>
+                <span className="text-slate-500">₦</span>
                 <input
                   type="number"
                   min="1"
@@ -135,6 +141,8 @@ export const RewardSettingsStep = ({
           <div className="mt-2">
             <input
               type="text"
+              value={campaignData.customTask}
+              onChange={handleCustomTaskChange}
               className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter task description (e.g. 'Complete profile')"
             />

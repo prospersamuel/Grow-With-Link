@@ -7,10 +7,10 @@ import {
   FiX,
 } from "react-icons/fi";
 import {LuRefreshCcw} from "react-icons/lu"
-import Transactions from "../transactions/Transactions";
+import Transactions from "../../promoterdashboard/transactions/PromoterTransactions";
 import useCompanyData from "../../../hooks/useCompanyStats";
 
-export default function Wallet() {
+export default function PromoterWallet() {
   const [showDeposit, setShowDeposit] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
 
@@ -21,6 +21,7 @@ export default function Wallet() {
 
     const { data, loading, error, refresh } = useCompanyData();
   if (error) return <p>Error: {error}</p>;
+
   
 
 
@@ -30,10 +31,8 @@ export default function Wallet() {
         <div className="flex justify-between items-start">
           <div>
             <h2 className="text-lg font-medium">Wallet Balance</h2>
-            <p className="text-3xl font-bold mt-2">{
-              loading ? <div className="w-8 h-4 bg-gradient-to-r from-blue-500 to-indigo-500 animate-pulse"></div> :
-            data.balance || 'Not set'
-            }</p>
+            <p className="text-3xl font-bold mt-2">{ loading ? <div className="w-8 h-4 bg-gradient-to-r from-blue-500 to-indigo-500animate-pulse"></div> :
+            data.balance.toFixed(2) ?? 0.00 }</p>
           </div>
            <button
            onClick={refresh}

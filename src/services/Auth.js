@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   GoogleAuthProvider,
+  sendEmailVerification,
   signInWithPopup,
   signOut,
 } from "firebase/auth";
@@ -46,7 +47,7 @@ export const registerUser = async (
     password
   );
   const user = userCredential.user;
-
+  
   const initialsURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     name
   )}&background=random`;
@@ -57,6 +58,8 @@ export const registerUser = async (
     photoURL: initialsURL,
   });
 
+  await sendEmailVerification(user)
+  
   // Build Firestore schema
   const baseData = {
     uid: user.uid,
@@ -71,12 +74,12 @@ export const registerUser = async (
     status: "active",
     verified: false,
   };
-
+  
   // Extend schema depending on role
   const extraData =
-    role === "promoter"
+  role === "promoter"
       ? {
-          totalEarned: 0,
+        totalEarned: 0,
           referredVisitors: 0,
           referredConversions: 0,
           campaignsJoined: [],
@@ -92,11 +95,11 @@ export const registerUser = async (
           totalConversions: 0,
         };
 
-  await setDoc(doc(db, "users", user.uid), {
-    ...baseData,
-    ...extraData,
-  });
-
+        await setDoc(doc(db, "users", user.uid), {
+          ...baseData,
+          ...extraData,
+        });
+        
   return user;
 };
 

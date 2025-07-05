@@ -6,9 +6,9 @@ import {
   FiCreditCard,
   FiZap,
 } from "react-icons/fi";
+import { MdCampaign } from "react-icons/md";
 import { RiExchangeLine } from "react-icons/ri";
-import useCompanyData from "../hooks/useCompanyStats";
-import { LuRefreshCcw } from "react-icons/lu";
+import useCompanyData from "../../../hooks/useCompanyStats";
 
 export default function Statscard() {
   const { data, loading, error } = useCompanyData();
@@ -30,27 +30,27 @@ export default function Statscard() {
   const Stats = [
     {
       title: "Wallet Balance",
-      value: "₦ " + data.balance ?? "0.00",
+      value: "₦ " + data.balance.toFixed(2) ?? "0.00",
       change: "+1",
-      icon: <FiZap />,
+      icon: <FiCreditCard />,
     },
     {
       title: "Total Spent",
-      value: "₦ " + data.totalSpend ?? "0.00",
+      value: "₦ " + data.totalSpend.toFixed(2) ?? "0.00",
       change: "+12.5%",
-      icon: <FiUsers />,
+      icon: <RiExchangeLine />,
     },
     {
       title: "Active Campaigns",
       value: data.activeCampaignsCount ?? 0,
       change: "+3.2%",
-      icon: <RiExchangeLine />,
+      icon: <MdCampaign />,
     },
     {
       title: "Total Conversions",
       value: data.totalConversions ?? 0,
       change: "+18%",
-      icon: <FiCreditCard />,
+      icon: <FiZap />,
     },
   ];
 

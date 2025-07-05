@@ -1,10 +1,10 @@
 // pages/dashboard/components/DashboardOverview.jsx
 import { motion } from "framer-motion";
-import StatsCard from "../../../components/Startscard";
-import ReferralChart from "../referralChart/ReferralChart";
-import Transactions from "../transactions/Transactions";
+import StatsCard from "../startsCard/CompanyStartscard";
+import CompanyReferralChart from "../referralChart/CompanyReferralChart";
+import CompanyTransactions from "../transactions/CompanyTransactions";
 
-export default function DashboardOverview() {
+export default function CompanyDashboardOverview() {
   return (
     <div className="space-y-6">
       <motion.div 
@@ -18,10 +18,10 @@ export default function DashboardOverview() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 bg-white/80 dark:bg-slate-800/80 rounded-xl p-4 shadow border border-slate-200/50 dark:border-slate-700/50">
-          <ReferralChart />
+          <CompanyReferralChart />
         </div>
         <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl p-4 shadow border border-slate-200/50 dark:border-slate-700/50">
-          <Transactions />
+          <CompanyTransactions />
         </div>
       </div>
     </div>

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { FaSun, FaMoon, FaArrowRight } from "react-icons/fa";
+import { FaSun, FaMoon } from "react-icons/fa";
 import { useApp } from "../../context/Appcontext";
 import { CiMenuFries } from "react-icons/ci";
 import { motion, AnimatePresence } from "framer-motion";
+import { FiLogIn } from "react-icons/fi";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -68,7 +69,7 @@ export default function Navbar() {
             whileTap={{ scale: 0.97 }}
             className="flex items-center gap-2 bg-gradient-to-r from-primary to-cyan-500 text-white px-4 py-2 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all text-lg"
           >
-            Login <FaArrowRight size={14} />
+            Login <FiLogIn size={14} />
           </motion.button>
 
           {/* Theme Toggle */}
@@ -133,7 +134,7 @@ export default function Navbar() {
               whileTap={{ scale: 0.97 }}
               className="flex items-center gap-2 bg-gradient-to-r from-primary to-cyan-500 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all text-lg"
             >
-              Login <FaArrowRight size={14} />
+              Login <FiLogIn size={14} />
             </motion.button>
           </motion.div>
         )}

@@ -8,20 +8,20 @@ import {
   resetPassword,
 } from "../../services/Auth";
 import AlertBox from "../../components/Alertbox";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { validateField } from "../../services/Validate";
 import { useNavigate } from "react-router-dom";
+import LoginForm from "./LoginForm";
 
 const formFields = {
   login: [
-    { type: "email", placeholder: "Email" },
-    { type: "password", placeholder: "Password" },
+    { type: "email", name: "Email" },
+    { type: "password", name: "Password" },
   ],
   signup: [
-    { type: "text", placeholder: "Full Name" },
-    { type: "email", placeholder: "Email" },
-    { type: "tel", placeholder: "Phone Number" },
-    { type: "password", placeholder: "Password" },
+    { type: "text", name: "Full Name" },
+    { type: "email", name: "Email" },
+    { type: "tel", name: "Phone Number" },
+    { type: "password", name: "Password" },
   ],
 };
 
@@ -32,11 +32,11 @@ export default function Login({ onClose }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
 
   const errorMessages = {
-    "auth/email-already-in-use": "Email already in use. Try logging in instead.",
+    "auth/email-already-in-use":
+      "Email already in use. Try logging in instead.",
     "auth/invalid-email": "Please enter a valid email address.",
     "auth/user-not-found": "No account found with this email.",
     "auth/wrong-password": "Incorrect password.",
@@ -48,7 +48,8 @@ export default function Login({ onClose }) {
     "auth/requires-recent-login": "Please log in again.",
   };
 
-  const getFriendlyError = (code) => errorMessages[code] || "Something went wrong.";
+  const getFriendlyError = (code) =>
+    errorMessages[code] || "Something went wrong.";
 
   const [alert, setAlert] = useState({
     open: false,
@@ -58,7 +59,12 @@ export default function Login({ onClose }) {
     onConfirmAction: null,
   });
 
-  const showAlert = ({ type = "info", title, message, onConfirmAction = null }) => {
+  const showAlert = ({
+    type = "info",
+    title,
+    message,
+    onConfirmAction = null,
+  }) => {
     setAlert({ open: true, type, title, message, onConfirmAction });
   };
 
@@ -68,62 +74,105 @@ export default function Login({ onClose }) {
   };
 
   const handleInputChange = (e) => {
-    const { placeholder, value } = e.target;
-    setInputs((prev) => ({ ...prev, [placeholder]: value }));
-    setErrors((prev) => ({ ...prev, [placeholder]: validateField(placeholder, value) }));
-  };
-
-  const handleGoogleAuth = async () => {
-  try {
-    setGoogleLoading(true);
-
-    let roleIfNew = null;
-    if (mode === "signup") {
-      if (!inputs["Role"]) {
-        showAlert({
-          type: "warning",
-          title: "Select Role",
-          message: "Please choose what you are signing up as before continuing.",
-        });
-        return;
-      }
-      roleIfNew = inputs["Role"];
-    }
-
-    await signInWithGoogle(roleIfNew, inputs["Company Name"], inputs["Company Website"]);
-
-    // ✅ Success only
-    showAlert({
-      type: "success",
-      title: "Google Sign-in Successful",
-      message: "You're logged in!",
-      onConfirmAction: () => {
-        onClose();
-        navigate("/dashboard")
-      },
-    });
-  } catch (err) {
-    showAlert({
-      type: "error",
-      title: "Google Sign-in Failed",
-      message: err.message || "Something went wrong.",
-    });
-  } finally {
-    setGoogleLoading(false);
-  }
+  const { placeholder: name, value } = e.target;
+  const validationResult = validateField(name, value);
+  
+  setInputs((prev) => ({ 
+    ...prev, 
+    [name]: value,
+    // Only store strength if it's the password field
+    ...(name === "Password" && typeof validationResult === 'object' ? { 
+      passwordStrength: validationResult.strength 
+    } : {})
+  }));
+  
+  // Set error (handles both string and object returns)
+  setErrors((prev) => ({
+    ...prev,
+    [name]: typeof validationResult === 'object' 
+      ? validationResult.error 
+      : validationResult
+  }));
 };
 
+  const handleGoogleAuth = async () => {
+    try {
+      setGoogleLoading(true);
+
+      let roleIfNew = null;
+      if (mode === "signup") {
+        if (!inputs["Role"]) {
+          showAlert({
+            type: "warning",
+            title: "Select Role",
+            message:
+              "Please choose what you are signing up as before continuing.",
+          });
+          return;
+        }
+        roleIfNew = inputs["Role"];
+      }
+
+      await signInWithGoogle(
+        roleIfNew,
+        inputs["Company Name"],
+        inputs["Company Website"]
+      );
+
+      // ✅ Success only
+      showAlert({
+        type: "success",
+        title: "Google Sign-in Successful",
+        message: "You're logged in!",
+        onConfirmAction: () => {
+          onClose();
+          navigate("/dashboard");
+        },
+      });
+    } catch (err) {
+      showAlert({
+        type: "error",
+        title: "Google Sign-in Failed",
+        message: err.message || "Something went wrong.",
+      });
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const newErrors = {};
-    formFields[mode].forEach((field) => {
-      const value = inputs[field.placeholder] || "";
-      const error = validateField(field.placeholder, value);
-      if (error) newErrors[field.placeholder] = error;
+     // Validate all fields
+  const newErrors = {};
+  let isValid = true;
+  
+  formFields[mode].forEach((field) => {
+    const validation = validateField(field.name, inputs[field.name] || "");
+    if (typeof validation === 'object' ? validation.error : validation) {
+      newErrors[field.name] = typeof validation === 'object' ? validation.error : validation;
+      isValid = false;
+    }
+  });
+  
+  // Special case for password strength
+  if (mode === "signup" && inputs.passwordStrength < 3) {
+    newErrors["Password"] = "Password too weak (add numbers, uppercase, or symbols)";
+    isValid = false;
+  }
+  
+  if (!isValid) {
+    setErrors(newErrors);
+    setAlert({
+      open: true,
+      type: "error",
+      title: "Weak Password",
+      message: "Please strengthen your password with numbers, uppercase letters, or symbols",
     });
+    setLoading(false)
+    return;
+  }
 
     if (mode === "signup" && !inputs["Role"]) {
       newErrors["Role"] = "Please select a role.";
@@ -149,7 +198,12 @@ export default function Login({ onClose }) {
       return;
     }
 
-    const { Email: email, Password: password, "Full Name": name, "Phone Number": phone } = inputs;
+    const {
+      Email: email,
+      Password: password,
+      "Full Name": name,
+      "Phone Number": phone,
+    } = inputs;
 
     try {
       if (mode === "login") {
@@ -160,17 +214,28 @@ export default function Login({ onClose }) {
           message: "Welcome back!",
           onConfirmAction: () => {
             onClose();
-            navigate("/dashboard")
+            navigate("/dashboard");
           },
         });
       } else {
-        const companyData = inputs["Role"] === "company" ? {
-          companyName: inputs["Company Name"],
-          companyWebsite: inputs["Company Website"]
-        } : null;
-        
-        await registerUser(email, password, name, phone, inputs["Role"], companyData, inputs["Company Name"],
-  inputs["Company Website"]);
+        const companyData =
+          inputs["Role"] === "company"
+            ? {
+                companyName: inputs["Company Name"],
+                companyWebsite: inputs["Company Website"],
+              }
+            : null;
+
+        await registerUser(
+          email,
+          password,
+          name,
+          phone,
+          inputs["Role"],
+          companyData,
+          inputs["Company Name"],
+          inputs["Company Website"]
+        );
 
         showAlert({
           type: "success",
@@ -178,7 +243,7 @@ export default function Login({ onClose }) {
           message: "Your account has been created.",
           onConfirmAction: () => {
             onClose();
-            navigate("/dashboard")
+            navigate("/dashboard");
           },
         });
       }
@@ -221,11 +286,11 @@ export default function Login({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Glassmorphism backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/30 backdrop-blur-md"
         onClick={onClose}
       />
-      
+
       <AnimatePresence mode="wait">
         <motion.div
           key={mode}
@@ -252,195 +317,18 @@ export default function Login({ onClose }) {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === "login" ? (
-              <>
-                <div className="space-y-3">
-                  <div className="relative">
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={inputs["Email"] || ""}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 rounded-xl dark:text-white bg-white/70 dark:bg-slate-700/70 border border-slate-300/80 dark:border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-                    />
-                    {errors["Email"] && (
-                      <p className="text-red-500 text-xs mt-1 ml-1 font-medium">
-                        {errors["Email"]}
-                      </p>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <input
-                      type={passwordVisible ? "text" : "password"}
-                      placeholder="Password"
-                      value={inputs["Password"] || ""}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 dark:text-white rounded-xl bg-white/70 dark:bg-slate-700/70 border border-slate-300/80 dark:border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setPasswordVisible(!passwordVisible)}
-                      className="absolute right-3 top-3.5 text-slate-500 hover:text-slate-700 dark:hover:text-white transition-colors"
-                    >
-                      {passwordVisible ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                    {errors["Password"] && (
-                      <p className="text-red-500 text-xs mt-1 ml-1 font-medium">
-                        {errors["Password"]}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleResetPassword}
-                  className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-right w-full -mt-2"
-                >
-                  Forgot Password?
-                </button>
-              </>
-            ) : (
-              <>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Full Name"
-                      value={inputs["Full Name"] || ""}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 dark:text-white rounded-xl bg-white/70 dark:bg-slate-700/70 border border-slate-300/80 dark:border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-                    />
-                    {errors["Full Name"] && (
-                      <p className="text-red-500 text-xs mt-1 ml-1 font-medium">
-                        {errors["Full Name"]}
-                      </p>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={inputs["Email"] || ""}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 dark:text-white rounded-xl bg-white/70 dark:bg-slate-700/70 border border-slate-300/80 dark:border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-                    />
-                    {errors["Email"] && (
-                      <p className="text-red-500 text-xs mt-1 ml-1 font-medium">
-                        {errors["Email"]}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      placeholder="Phone Number"
-                      value={inputs["Phone Number"] || ""}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 dark:text-white rounded-xl bg-white/70 dark:bg-slate-700/70 border border-slate-300/80 dark:border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-                    />
-                    {errors["Phone Number"] && (
-                      <p className="text-red-500 text-xs mt-1 ml-1 font-medium">
-                        {errors["Phone Number"]}
-                      </p>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <input
-                      type={passwordVisible ? "text" : "password"}
-                      placeholder="Password"
-                      value={inputs["Password"] || ""}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 dark:text-white rounded-xl bg-white/70 dark:bg-slate-700/70 border border-slate-300/80 dark:border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setPasswordVisible(!passwordVisible)}
-                      className="absolute right-3 top-3.5 text-slate-500 hover:text-slate-700 dark:hover:text-white transition-colors"
-                    >
-                      {passwordVisible ? <FaEyeSlash /> : <FaEye />}
-                    </button>
-                    {errors["Password"] && (
-                      <p className="text-red-500 text-xs mt-1 ml-1 font-medium">
-                        {errors["Password"]}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="relative">
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 ml-2 mb-1">
-                    I am signing up as:
-                  </label>
-                  <select
-                    value={inputs["Role"] || ""}
-                    onChange={(e) =>
-                      setInputs((prev) => ({ ...prev, ["Role"]: e.target.value }))
-                    }
-                    className="w-full px-4 py-2 dark:text-white rounded-xl bg-white/70 dark:bg-slate-700 border border-slate-300/80 dark:border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all appearance-none"
-                  >
-                    <option value="" disabled>Select role</option>
-                    <option value="promoter">Promoter</option>
-                    <option value="company">Company</option>
-                  </select>
-                  {errors["Role"] && (
-                    <p className="text-red-500 text-xs mt-1 ml-1 font-medium">
-                      {errors["Role"]}
-                    </p>
-                  )}
-                </div>
-                {inputs["Role"] === "company" && (
-                  <div className="space-y-3">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="Company Name"
-                        value={inputs["Company Name"] || ""}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 dark:text-white rounded-xl bg-white/70 dark:bg-slate-700/70 border border-slate-300/80 dark:border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-                      />
-                      {errors["Company Name"] && (
-                        <p className="text-red-500 text-xs mt-1 ml-1 font-medium">
-                          {errors["Company Name"]}
-                        </p>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <input
-                        type="url"
-                        placeholder="Company Website"
-                        value={inputs["Company Website"] || ""}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 dark:text-white rounded-xl bg-white/70 dark:bg-slate-700/70 border border-slate-300/80 dark:border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
-                      />
-                      {errors["Company Website"] && (
-                        <p className="text-red-500 text-xs mt-1 ml-1 font-medium">
-                          {errors["Company Website"]}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            <button
-              disabled={loading}
-              type="submit"
-              className="w-full py-3 px-4 bg-gradient-to-r from-primary to-cyan-500 uppercase text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="inline-flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {mode === "login" ? "Signing in..." : "Creating account..."}
-                </span>
-              ) : mode === "login" ? "Sign In" : "Sign Up"}
-            </button>
-          </form>
+          <LoginForm
+            handleSubmit={handleSubmit}
+            handleInputChange={handleInputChange}
+            inputs={inputs}
+            errors={errors}
+            passwordVisible={passwordVisible}
+            setPasswordVisible={setPasswordVisible}
+            handleResetPassword={handleResetPassword}
+            setInputs={setInputs}
+            loading={loading}
+            mode={mode}
+          />
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
@@ -495,7 +383,6 @@ export default function Login({ onClose }) {
         message={alert.message}
         onConfirm={() => {
           setAlert((prev) => ({ ...prev, open: false }));
-          console.log("Alert confirmed");
           if (alert.onConfirmAction) alert.onConfirmAction();
         }}
       />

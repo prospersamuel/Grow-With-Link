@@ -1,9 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/home/Home";
-import Dashboard from "./pages/companyDashboard/dashboard/Dashboard";
+import CompanyDashboard from "./pages/companyDashboard/dashboard/CompanyDashboard";
 import { Toaster } from "react-hot-toast";
 import { useApp } from "./context/Appcontext";
 import Login from "./pages/Login/Login";
+import VerifyEmailPage from "./pages/Login/VerifyEmailPage";
+import RequireAuth from "./pages/Login/RequireAuth";
+import PromoterDashboard from "./pages/promoterdashboard/dashboard/PromoterDashboard";
 
 function AppContent() {
   const { theme, showLogin, setShowLogin } = useApp();
@@ -23,7 +26,12 @@ function AppContent() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />}/>
+        <Route path="/dashboard" element={
+          <RequireAuth>
+          <PromoterDashboard />
+          </RequireAuth>
+          } />
       </Routes>
 
       {/* ✅ Only show if true */}
